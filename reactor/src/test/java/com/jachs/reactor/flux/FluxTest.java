@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import org.junit.Test;
@@ -42,6 +43,38 @@ public class FluxTest {
 		//防止程序过早退出，放一个CountDownLatch拦住
 		CountDownLatch latch = new CountDownLatch(1);
 		latch.await();
+	}
+	/***
+	 * map是纯元素转换</br>
+	 * 
+	 */
+	@Test
+	public void mapAndFlatMap() {
+		 Flux.just(1, 2, 3, 4)
+         .log()
+         .map(i -> {
+             try {
+                 TimeUnit.SECONDS.sleep(1);
+             } catch (InterruptedException e) {
+                 e.printStackTrace();
+             }
+             return i * 2;
+         })
+         .subscribe(System.out::println);
+	}
+	/**
+	 * 这里的flatMap，将元素转为Mono或Flux，转换操作里头还可以进行异步操作
+	 * 
+	 */
+	@Test
+	public void flatMap() throws InterruptedException {
+		Flux.just(1,2,3,4)
+        .log()
+        .flatMap(e -> {
+            return Flux.just(e*5).delayElements(Duration.ofSeconds(1));
+        })
+        .subscribe(System.out::println);
+		TimeUnit.SECONDS.sleep(10);
 	}
 	@Test
 	public void test2() {

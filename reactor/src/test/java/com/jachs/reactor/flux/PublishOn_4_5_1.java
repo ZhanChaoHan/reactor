@@ -5,6 +5,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
+import java.time.Duration;
+
 /***
  * @author zhanchaohan
  */
@@ -21,5 +23,7 @@ public class PublishOn_4_5_1 {
 
                 .map(i -> "value " + i);
         new Thread(() -> flux.subscribe(System.out::println));
+
+        flux.blockLast(Duration.ofSeconds(3000));
     }
 }

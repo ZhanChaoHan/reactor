@@ -20,7 +20,8 @@ public class FluxCreate_4_4_2 {
      */
     @Test
     public void test1(){
-        MyEventListenerImpl myEventProcessor = null;
+        MyEventListenerImpl myEventProcessor = new MyEventListenerImpl();
+
         Flux<String> bridge = Flux.create(sink -> {
             myEventProcessor.register(
                     new MyEventListener<String>() {
@@ -29,7 +30,6 @@ public class FluxCreate_4_4_2 {
                                 sink.next(s);
                             }
                         }
-
                         public void processComplete() {
                             sink.complete();
                         }
