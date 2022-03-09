@@ -3,12 +3,20 @@ package com.jachs.reactor.flux;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Flow.Publisher;
+import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.junit.Test;
+
+import com.jachs.reactor.entity.People;
+import com.jachs.reactor.entity.User;
 
 import reactor.core.publisher.Flux;
 
@@ -49,7 +57,7 @@ public class FluxTest {
 	 * 
 	 */
 	@Test
-	public void mapAndFlatMap() {
+	public void map() {
 		 Flux.just(1, 2, 3, 4)
          .log()
          .map(i -> {
@@ -61,11 +69,27 @@ public class FluxTest {
              return i * 2;
          })
          .subscribe(System.out::println);
+		 
+		 List<User>uList=new ArrayList<User>();
+		 uList.add(new User("ABC", 0, "12"));
+		 uList.add(new User("一二三", 1, "123"));
+		 uList.add(new User("liack", 2, "1234"));
+		 uList.add(new User("mkjc", 3, "12345"));
+		 
+		 Flux.fromIterable(uList)
+		 .map(user->{
+			 user.setName("处理后名称:"+user.getName());
+			 return user;
+		 }).subscribe(user->{
+			 System.out.println(user.getName()+"\t"+user.getAge()+"\t"+user.getPwd());
+		 });
+		 
 	}
 	/**
 	 * 这里的flatMap，将元素转为Mono或Flux，转换操作里头还可以进行异步操作
 	 * 
 	 */
+	@SuppressWarnings("unchecked")
 	@Test
 	public void flatMap() throws InterruptedException {
 		Flux.just(1,2,3,4)
@@ -75,6 +99,23 @@ public class FluxTest {
         })
         .subscribe(System.out::println);
 		TimeUnit.SECONDS.sleep(10);
+		
+		List<User>uList=new ArrayList<User>();
+		uList.add(new User("曹操", 0, "12"));
+		uList.add(new User("诸葛亮", 1, "123"));
+		uList.add(new User("刘备", 2, "1234"));
+		uList.add(new User("孙权", 3, "12345"));
+		
+		Flux.fromIterable(uList)
+		//整不明白
+		.flatMap((Function<User, ? extends org.reactivestreams.Publisher<? extends People>>) new Function<User, Publisher<People>>() {
+			@Override
+			public Publisher<People> apply(User t) {
+				People peo=new People();
+				
+				return null;
+			}
+		});
 	}
 	@Test
 	public void test2() {
